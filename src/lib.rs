@@ -11,19 +11,27 @@ pub type MergeConfigResult<T> = Result<T, error::MergeConfigError>;
 
 /// will layer later dirs on top of previous
 /// will sort file paths alphabetically
-/// will only include file paths with names that include match keywords
+/// will only include file paths with names that contain all match keywords
 /// if match_keywords empty, will include all files in the directory
 pub fn parse_config_dirs<T: DeserializeOwned>(
-    dir_paths: impl IntoIterator<Item = impl Borrow<String>>,
-    match_keywords: impl IntoIterator<Item = impl Borrow<String>>,
+    dir_paths: impl IntoIterator<Item = impl Borrow<str>>,
+    match_keywords: impl IntoIterator<Item = impl Borrow<str>>,
     merge_nested: bool,
     extend_array: bool,
 ) -> MergeConfigResult<T> {
+    let paths = dir_files_matching_kw(dir_paths, match_keywords)?;
+    parse_config_files(paths, merge_nested, extend_array)
+}
+
+pub fn dir_files_matching_kw(
+    dir_paths: impl IntoIterator<Item = impl Borrow<str>>,
+    match_keywords: impl IntoIterator<Item = impl Borrow<str>>,
+) -> MergeConfigResult<Vec<String>> {
     let kws = match_keywords
         .into_iter()
         .map(|s| s.borrow().to_string())
         .collect::<Vec<String>>();
-    let paths = dir_paths
+    let files = dir_paths
         .into_iter()
         .map(|dir_path| {
             let path = dir_path.borrow();
@@ -60,20 +68,25 @@ pub fn parse_config_dirs<T: DeserializeOwned>(
                     }
                     true
                 })
-                .map(|(_, path)| dir_path.join(path).as_path().display().to_string())
+                .map(|(_, path)| path.as_path().display().to_string())
                 .collect::<Vec<String>>();
             files.sort();
             Ok(files)
         })
         .collect::<MergeConfigResult<Vec<Vec<String>>>>()?
         .into_iter()
-        .flatten();
-    parse_config_files(paths, merge_nested, extend_array)
+        .flatten()
+        .map(|path| {
+            println!("{path}");
+            path
+        })
+        .collect();
+    Ok(files)
 }
 
 /// parses multiple config files
 pub fn parse_config_files<T: DeserializeOwned>(
-    paths: impl IntoIterator<Item = impl Borrow<String>>,
+    paths: impl IntoIterator<Item = impl Borrow<str>>,
     merge_nested: bool,
     extend_array: bool,
 ) -> MergeConfigResult<T> {
@@ -93,7 +106,8 @@ pub fn parse_config_files<T: DeserializeOwned>(
 }
 
 /// parses a single config file
-pub fn parse_config_file<T: DeserializeOwned>(path: &str) -> MergeConfigResult<T> {
+pub fn parse_config_file<T: DeserializeOwned>(path: impl Borrow<str>) -> MergeConfigResult<T> {
+    let path: &str = path.borrow();
     let mut file = File::open(&path).map_err(|e| FileOpenError {
         e,
         path: path.to_string(),
