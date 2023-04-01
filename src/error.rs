@@ -42,4 +42,7 @@ pub enum MergeConfigError {
 
     #[error("failed to get file name for file at {path:?}")]
     GetFileNameError { path: PathBuf },
+
+    #[error("failed to get metadata for path {path:?} | {e:?}")]
+    ReadPathMetaDataError { path: PathBuf, e: std::io::Error },
 }
