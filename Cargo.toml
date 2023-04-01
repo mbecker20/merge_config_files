@@ -1,6 +1,6 @@
 [package]
 name = "merge_config_files"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["MoghTech"]
 description = "tools to merge config from multiple files / directories. supports json and toml"

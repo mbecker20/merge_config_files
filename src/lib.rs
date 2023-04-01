@@ -54,6 +54,13 @@ fn file_names_in_dir(dir_path: &PathBuf, keywords: &Vec<String>) -> MergeConfigR
                 e,
                 path: dir_path.clone(),
             })?;
+            let is_file = file.metadata().unwrap().is_file();
+            MergeConfigResult::Ok((file, is_file))
+        })
+        .collect::<MergeConfigResult<Vec<_>>>()?
+        .into_iter()
+        .filter(|(_, is_file)| *is_file)
+        .map(|(file, _)| {
             let path = file.path();
             let name = file
                 .file_name()
