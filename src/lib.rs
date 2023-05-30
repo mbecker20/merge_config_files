@@ -111,7 +111,7 @@ pub fn parse_config_files<T: DeserializeOwned>(
 /// parses a single config file
 pub fn parse_config_file<T: DeserializeOwned>(path: impl Borrow<str>) -> MergeConfigResult<T> {
     let path: &str = path.borrow();
-    let mut file = File::open(&path).map_err(|e| FileOpenError {
+    let mut file = File::open(path).map_err(|e| FileOpenError {
         e,
         path: path.to_string(),
     })?;
