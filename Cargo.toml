@@ -4,7 +4,7 @@ members = [".", "example"]
 
 [package]
 name = "merge_config_files"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["mbecker20"]
 description = "tools to merge config from multiple files / directories. supports json and toml"

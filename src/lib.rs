@@ -59,22 +59,14 @@ pub enum Error {
 pub type Result<T> = ::core::result::Result<T, Error>;
 
 /// parse paths that are either directories or files
-pub fn parse_config_paths<'a, T: DeserializeOwned>(
+pub fn parse_config_paths<T: DeserializeOwned>(
   paths: &[&Path],
-  match_wildcards: Option<&'a [&'a str]>,
+  match_wildcards: &[&str],
   merge_nested: bool,
   extend_array: bool,
 ) -> Result<T> {
-  let match_wildcards = match_wildcards
-    .map(|match_wildcards| {
-      match_wildcards
-        .into_iter()
-        .map(|&kw| kw.to_string())
-        .collect::<Vec<_>>()
-    })
-    .unwrap_or_default();
   let wildcards = match_wildcards
-    .iter()
+    .into_iter()
     .flat_map(|kw| match wildcard::Wildcard::new(kw.as_bytes()) {
       Ok(wc) => Some(wc),
       Err(e) => {
@@ -142,7 +134,9 @@ fn file_names_in_dir(dir_path: &Path, wildcards: &[wildcard::Wildcard]) -> Resul
     })
     .collect::<Result<Vec<_>>>()?
     .into_iter()
-    .filter(|(name, _)| wildcards.iter().any(|wc| wc.is_match(name.as_bytes())))
+    .filter(|(name, _)| {
+      wildcards.is_empty() || wildcards.iter().any(|wc| wc.is_match(name.as_bytes()))
+    })
     .map(|(_, path)| path)
     .collect::<Vec<_>>();
   files.sort();

@@ -15,7 +15,7 @@ struct Config {
 fn main() {
   let config = merge_config_files::parse_config_paths::<Config>(
     &[PathBuf::from("./config").as_path()],
-    None,
+    &[],
     true,
     true,
   )
