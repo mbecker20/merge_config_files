@@ -1,8 +1,12 @@
+[workspace]
+resolver = "2"
+members = [".", "example"]
+
 [package]
 name = "merge_config_files"
-version = "0.1.5"
+version = "1.0.0"
 edition = "2021"
-authors = ["MoghTech"]
+authors = ["mbecker20"]
 description = "tools to merge config from multiple files / directories. supports json and toml"
 repository = "https://github.com/mbecker20/merge_config_files"
 license = "MIT"
@@ -10,7 +14,8 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-thiserror = "1.0.58"
-serde = "1.0.197"
-serde_json = "1.0.115"
-toml = "0.8.12"
+thiserror = "2.0"
+serde = "1.0"
+serde_json = "1.0"
+toml = "0.9"
+wildcard = "0.3"

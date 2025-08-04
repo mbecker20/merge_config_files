@@ -1,0 +1,9 @@
+name = "Not shown"
+
+addresses = [
+  "base-address-1",
+  "base-address-2",
+]
+
+[values]
+BASE = "base"

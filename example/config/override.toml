@@ -1,0 +1,9 @@
+name = "merge_config_files"
+
+addresses = [
+  "override-address-1",
+  "override-address-2",
+]
+
+[values]
+OVERRIDE = "override"
